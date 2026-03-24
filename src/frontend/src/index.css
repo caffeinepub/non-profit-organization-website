@@ -1,0 +1,147 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --radius: 0.75rem;
+    /* Deep navy dark theme */
+    --background: 0.09 0.018 240;
+    --foreground: 0.97 0.008 240;
+    --card: 0.13 0.022 240;
+    --card-foreground: 0.97 0.008 240;
+    --popover: 0.13 0.022 240;
+    --popover-foreground: 0.97 0.008 240;
+    /* Neon cyan primary */
+    --primary: 0.83 0.145 192;
+    --primary-foreground: 0.09 0.018 240;
+    /* Purple secondary */
+    --secondary: 0.55 0.22 280;
+    --secondary-foreground: 0.97 0.008 240;
+    --muted: 0.17 0.02 240;
+    --muted-foreground: 0.61 0.03 240;
+    --accent: 0.66 0.18 240;
+    --accent-foreground: 0.09 0.018 240;
+    --destructive: 0.58 0.22 25;
+    --destructive-foreground: 0.97 0 0;
+    --border: 0.22 0.025 240;
+    --input: 0.18 0.022 240;
+    --ring: 0.83 0.145 192;
+    --chart-1: 0.83 0.145 192;
+    --chart-2: 0.55 0.22 280;
+    --chart-3: 0.66 0.18 240;
+    --chart-4: 0.75 0.14 120;
+    --chart-5: 0.7 0.2 320;
+    --sidebar: 0.11 0.02 240;
+    --sidebar-foreground: 0.97 0.008 240;
+    --sidebar-primary: 0.83 0.145 192;
+    --sidebar-primary-foreground: 0.09 0.018 240;
+    --sidebar-accent: 0.17 0.02 240;
+    --sidebar-accent-foreground: 0.97 0.008 240;
+    --sidebar-border: 0.22 0.025 240;
+    --sidebar-ring: 0.83 0.145 192;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: "Inter", sans-serif;
+    background: linear-gradient(
+      135deg,
+      oklch(0.07 0.018 240) 0%,
+      oklch(0.1 0.022 240) 50%,
+      oklch(0.08 0.02 240) 100%
+    );
+    min-height: 100vh;
+  }
+}
+
+@layer utilities {
+  .hud-grid {
+    background-image: linear-gradient(
+        rgba(25, 230, 230, 0.04) 1px,
+        transparent 1px
+      ), linear-gradient(90deg, rgba(25, 230, 230, 0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+
+  .glass-card {
+    background: rgba(20, 26, 36, 0.65);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(90, 120, 140, 0.25);
+  }
+
+  .glass-nav {
+    background: rgba(7, 11, 18, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(25, 230, 230, 0.12);
+  }
+
+  .neon-cyan {
+    color: oklch(0.83 0.145 192);
+  }
+
+  .neon-glow {
+    box-shadow: 0 0 20px rgba(25, 230, 230, 0.3), 0 0 40px
+      rgba(25, 230, 230, 0.1);
+  }
+
+  .neon-text-glow {
+    text-shadow: 0 0 20px rgba(25, 230, 230, 0.6), 0 0 40px
+      rgba(25, 230, 230, 0.3);
+  }
+
+  .purple-glow {
+    box-shadow: 0 0 20px rgba(122, 92, 255, 0.4), 0 0 60px
+      rgba(122, 92, 255, 0.15);
+  }
+
+  .gradient-text {
+    background: linear-gradient(
+      135deg,
+      oklch(0.83 0.145 192),
+      oklch(0.66 0.18 240),
+      oklch(0.55 0.22 280)
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .timeline-line {
+    background: linear-gradient(
+      to bottom,
+      oklch(0.83 0.145 192),
+      oklch(0.55 0.22 280)
+    );
+  }
+
+  .progress-glow {
+    box-shadow: 0 0 10px rgba(25, 230, 230, 0.5);
+  }
+
+  .btn-blink {
+    animation: btnBlink 1.4s ease-in-out infinite;
+  }
+}
+
+@keyframes btnBlink {
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(25, 230, 230, 0.3), 0 0 40px
+      rgba(25, 230, 230, 0.1);
+    opacity: 1;
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(25, 230, 230, 0.9), 0 0 60px
+      rgba(25, 230, 230, 0.5), 0 0 90px rgba(25, 230, 230, 0.2);
+    opacity: 0.82;
+  }
+}
