@@ -10,7 +10,8 @@ import {
   Layers,
   Lock,
   Menu,
-  TrendingUp,
+  ShoppingBag,
+  Users,
   Wallet,
   X,
   Zap,
@@ -30,6 +31,34 @@ interface TimeLeft {
   hours: number;
   minutes: number;
   seconds: number;
+}
+
+function EvSolBitLogo({ className = "" }: { className?: string }) {
+  return (
+    <span className={`font-black tracking-widest uppercase ${className}`}>
+      <span
+        style={{
+          color: "#F7931A",
+          textShadow: "0 0 12px #F7931A60",
+        }}
+      >
+        E
+      </span>
+      <span className="text-foreground">V </span>
+      <span
+        style={{
+          background: "linear-gradient(135deg, #14F195, #9945FF)",
+          WebkitBackgroundClip: "text",
+          WebkitTextFillColor: "transparent",
+          backgroundClip: "text",
+          fontStyle: "italic",
+        }}
+      >
+        E
+      </span>
+      <span className="text-foreground">NERGY</span>
+    </span>
+  );
 }
 
 function useCountdown(targetDate: Date): TimeLeft {
@@ -164,10 +193,136 @@ const socialLinks = [
   },
 ];
 
+const roadmapPhases = [
+  {
+    phase: "Phase 1",
+    title: "Token Launch",
+    active: true,
+    items: [
+      "Token Launch",
+      "Contract Audit V1",
+      "Website Launch V1",
+      "Social Media Launch",
+      "1000+ Holders",
+      "Daily Draw 250+ Holders",
+      "2000+ Community Members",
+    ],
+  },
+  {
+    phase: "Phase 2",
+    title: "Exchange & Growth",
+    active: false,
+    items: [
+      "Weekly Draw 1000+ Holders",
+      "Coingecko Listing",
+      "CoinMarketCap Listing",
+      "5000+ Holders",
+      "10000+ Community Members",
+      "Apple Store App",
+      "DEX Launch (Exchange)",
+    ],
+  },
+  {
+    phase: "Phase 3",
+    title: "Expansion",
+    active: false,
+    items: [
+      "Listing On Small Exchanges",
+      "New Partnerships",
+      "15000+ Holders",
+      "Influencers Marketing",
+      "Website Launch V2",
+      "Whitepaper V1",
+      "Contract V2 Launch",
+      "Contract Audit V2",
+    ],
+  },
+  {
+    phase: "Phase 4",
+    title: "Major Milestones",
+    active: false,
+    items: [
+      "Website Launch V3",
+      "Listing On Major Exchanges",
+      "Whitepaper V2",
+      "30000+ Holders",
+      "Launching EV Bikes",
+      "Launching EV Chargers",
+      "Partnership with Visa Card",
+    ],
+  },
+];
+
+const tokenomicsCards = [
+  {
+    label: "Total Supply",
+    value: "50,000,000,000",
+    unit: "$ESB",
+    color: "nova-cyan",
+  },
+  {
+    label: "Maximum Supply",
+    value: "50,000,000,000",
+    unit: "$ESB",
+    color: "nova-purple",
+  },
+  {
+    label: "Airdrop",
+    value: "27,500,000,000",
+    unit: "$ESB",
+    color: "nova-cyan",
+  },
+  {
+    label: "Presale Price",
+    value: "$0.12",
+    unit: "per $ESB",
+    color: "nova-purple",
+  },
+];
+
+const features = [
+  {
+    icon: <Zap className="w-8 h-8" />,
+    title: "EV Revolution",
+    desc: "Powering the electric vehicle future. EV Energy bridges blockchain rewards with real-world EV adoption, funding bikes and chargers globally.",
+    accent: "nova-cyan",
+  },
+  {
+    icon: <Layers className="w-8 h-8" />,
+    title: "Blockchain Powered",
+    desc: "Built on Solana for lightning-fast transactions, ultra-low fees, and rock-solid security. Full smart contract transparency and auditability.",
+    accent: "nova-purple",
+  },
+  {
+    icon: <BarChart3 className="w-8 h-8" />,
+    title: "Airdrop Rewards",
+    desc: "27.5 billion $ESB tokens reserved for early adopters. Sign up, claim your share, and grow with the community from day one.",
+    accent: "nova-cyan",
+  },
+  {
+    icon: <Users className="w-8 h-8" />,
+    title: "Community Driven",
+    desc: "Every decision is shaped by holders. Daily and weekly draws reward loyal community members and incentivize long-term participation.",
+    accent: "nova-purple",
+  },
+  {
+    icon: <Globe className="w-8 h-8" />,
+    title: "Decentralized Exchange",
+    desc: "Trade $ESB seamlessly on DEX platforms. Phase 2 brings full DEX launch, followed by listings on major centralized exchanges.",
+    accent: "nova-cyan",
+  },
+  {
+    icon: <ShoppingBag className="w-8 h-8" />,
+    title: "Global Partnerships",
+    desc: "Strategic alliances with EV manufacturers, Visa Card, and global exchanges. Building real utility behind every $ESB token.",
+    accent: "nova-purple",
+  },
+];
+
 export default function LandingPage() {
   const [userData, setUserData] = useState<UserData | null>(() => {
     try {
-      const stored = localStorage.getItem("novachain_user");
+      const stored = localStorage.getItem("evsolbit_user");
       return stored ? JSON.parse(stored) : null;
     } catch {
       return null;
@@ -175,7 +330,7 @@ export default function LandingPage() {
   });
   const [walletAddress, setWalletAddress] = useState<string | null>(() => {
     try {
-      const stored = localStorage.getItem("novachain_wallet");
+      const stored = localStorage.getItem("evsolbit_wallet");
       if (!stored) return null;
       const parsed = JSON.parse(stored);
       return parsed.address || null;
@@ -192,9 +347,23 @@ export default function LandingPage() {
   const [subscribeStatus, setSubscribeStatus] = useState<"idle" | "success">(
     "idle",
   );
+  const [calcUsd, setCalcUsd] = useState<string>("");
+
+  const calcTokens = calcUsd ? Number.parseFloat(calcUsd) / 0.12 : 0;
+  const calcMin = 10;
+  const calcMax = 100000;
+  const calcUsdNum = Number.parseFloat(calcUsd) || 0;
+  const calcValid = calcUsdNum >= calcMin && calcUsdNum <= calcMax;
+  const calcError =
+    calcUsd && !calcValid
+      ? calcUsdNum < calcMin
+        ? `Minimum investment is $${calcMin}`
+        : `Maximum investment is $${calcMax.toLocaleString()}`
+      : "";
   const timeLeft = useCountdown(TARGET_DATE);
 
   const heroRef = useRef<HTMLElement>(null);
+  const tokenomicsRef = useRef<HTMLElement>(null);
   const presaleRef = useRef<HTMLElement>(null);
   const featuresRef = useRef<HTMLElement>(null);
   const roadmapRef = useRef<HTMLElement>(null);
@@ -213,7 +382,7 @@ export default function LandingPage() {
   };
 
   const handleSignUpSuccess = (data: UserData) => {
-    localStorage.setItem("novachain_user", JSON.stringify(data));
+    localStorage.setItem("evsolbit_user", JSON.stringify(data));
     setUserData(data);
     setShowSignUp(false);
   };
@@ -235,53 +404,9 @@ export default function LandingPage() {
 
   const pad = (n: number) => String(n).padStart(2, "0");
 
-  const features = [
-    {
-      icon: <BarChart3 className="w-8 h-8" />,
-      title: "Decentralized Governance",
-      desc: "Community-driven decisions through transparent on-chain voting. Every $NOVA holder has a voice.",
-    },
-    {
-      icon: <Globe className="w-8 h-8" />,
-      title: "Multi-Chain Support",
-      desc: "Seamlessly operate across Solana, Ethereum, and BNB chains with unified liquidity.",
-    },
-    {
-      icon: <TrendingUp className="w-8 h-8" />,
-      title: "Staking Rewards",
-      desc: "Earn passive income by staking your $NOVA tokens. Up to 42% APY for early adopters.",
-    },
-  ];
-
-  const roadmap = [
-    {
-      quarter: "Q2 2025",
-      title: "Platform Launch",
-      desc: "Public mainnet launch, token distribution, and initial DEX listing.",
-      done: true,
-    },
-    {
-      quarter: "Q3 2025",
-      title: "Token Listing on DEX",
-      desc: "Multi-DEX listing on Raydium, Uniswap, and PancakeSwap.",
-      done: false,
-    },
-    {
-      quarter: "Q4 2025",
-      title: "Mobile App & Cross-chain Bridge",
-      desc: "Native iOS/Android app and seamless cross-chain asset bridge.",
-      done: false,
-    },
-    {
-      quarter: "Q1 2026",
-      title: "DAO Governance & Full Ecosystem",
-      desc: "Full DAO deployment, grant program, and ecosystem fund activation.",
-      done: false,
-    },
-  ];
-
   const navLinks = [
     { label: "Airdrop", ref: heroRef },
+    { label: "Tokenomics", ref: tokenomicsRef },
     { label: "Presale", ref: presaleRef },
     { label: "Features", ref: featuresRef },
     { label: "Roadmap", ref: roadmapRef },
@@ -296,12 +421,10 @@ export default function LandingPage() {
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-nova-cyan to-nova-purple flex items-center justify-center neon-glow">
               <Zap className="w-4 h-4 text-white" />
             </div>
-            <span className="font-black text-lg tracking-widest uppercase gradient-text">
-              NovaChain
-            </span>
+            <EvSolBitLogo className="text-lg" />
           </div>
 
-          <nav className="hidden md:flex items-center gap-8">
+          <nav className="hidden md:flex items-center gap-6">
             {navLinks.map((link) => (
               <button
                 key={link.label}
@@ -322,7 +445,6 @@ export default function LandingPage() {
               </span>
             ) : null}
 
-            {/* Connect Wallet Button */}
             <Button
               type="button"
               onClick={() => setShowWallet(true)}
@@ -344,12 +466,14 @@ export default function LandingPage() {
               data-ocid="nav.signup.button"
               className="hidden md:inline-flex bg-nova-cyan text-nova-dark font-bold text-xs tracking-widest uppercase rounded-full px-6 hover:bg-nova-cyan/90 neon-glow transition-all"
             >
-              {userData?.signedUp ? "Claim Airdrop" : "Launch App"}
+              {userData?.signedUp ? "Claim Airdrop" : "Sign Up"}
             </Button>
+
             <button
               type="button"
               className="md:hidden text-foreground p-1"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              data-ocid="nav.hamburger.button"
             >
               {mobileMenuOpen ? (
                 <X className="w-5 h-5" />
@@ -401,9 +525,10 @@ export default function LandingPage() {
                     if (userData?.signedUp) setShowClaim(true);
                     else setShowSignUp(true);
                   }}
+                  data-ocid="mobile.signup.button"
                   className="bg-nova-cyan text-nova-dark font-bold text-xs tracking-widest uppercase rounded-full mt-1"
                 >
-                  {userData?.signedUp ? "Claim Airdrop" : "Launch App"}
+                  {userData?.signedUp ? "Claim Airdrop" : "Sign Up"}
                 </Button>
               </div>
             </motion.div>
@@ -432,18 +557,21 @@ export default function LandingPage() {
                 </span>
               </div>
 
-              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black uppercase leading-none tracking-tight">
-                <span className="text-foreground">GET YOUR</span>
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black uppercase leading-tight tracking-tight">
+                <span className="gradient-text neon-text-glow">The Future</span>
                 <br />
-                <span className="gradient-text neon-text-glow">$NOVA</span>
+                <span className="text-foreground">of EV &amp;</span>
                 <br />
-                <span className="text-foreground">AIRDROP</span>
+                <span className="gradient-text">Crypto</span>
               </h1>
 
               <p className="text-base text-muted-foreground max-w-md leading-relaxed">
-                Join thousands of early adopters and claim your share of
-                10,000,000 $NOVA tokens. The future of decentralized finance
-                starts here.
+                Join the EV Energy airdrop and be part of the revolution. Claim
+                your share of{" "}
+                <span className="text-nova-cyan font-bold">
+                  27.5 Billion $ESB
+                </span>{" "}
+                tokens and power the EV future.
               </p>
 
               {/* Countdown */}
@@ -499,29 +627,70 @@ export default function LandingPage() {
               </div>
 
               {/* Action Buttons */}
-              <div className="flex flex-wrap gap-3">
+              <div className="flex flex-col gap-3">
+                <div className="flex flex-wrap gap-3">
+                  {!userData?.signedUp && (
+                    <Button
+                      type="button"
+                      onClick={() => setShowSignUp(true)}
+                      data-ocid="hero.signup.button"
+                      size="lg"
+                      className="bg-gradient-to-r from-teal-500 to-purple-600 text-white font-black text-sm tracking-widest uppercase rounded-full px-8 py-6 hover:opacity-90 transition-all hover:scale-105 shadow-[0_0_20px_rgba(20,184,166,0.4)]"
+                    >
+                      Sign Up Free
+                      <ChevronRight className="ml-1 w-4 h-4" />
+                    </Button>
+                  )}
+                  <Button
+                    type="button"
+                    onClick={() => setShowWallet(true)}
+                    data-ocid="hero.connect_wallet.button"
+                    size="lg"
+                    variant="outline"
+                    className="border-nova-cyan/30 text-nova-cyan font-black text-sm tracking-widest uppercase rounded-full px-8 py-6 hover:bg-nova-cyan/10 hover:border-nova-cyan/60 transition-all hover:scale-105 gap-2"
+                  >
+                    <Wallet className="w-4 h-4" />
+                    {walletAddress
+                      ? truncateAddress(walletAddress)
+                      : "Connect Wallet"}
+                  </Button>
+                </div>
+
+                {/* Token label */}
+                <div className="flex items-center gap-1.5 mt-1">
+                  <span className="text-[11px] text-muted-foreground/60 tracking-widest uppercase font-medium">
+                    Token:
+                  </span>
+                  <span className="text-[11px] font-black tracking-widest uppercase">
+                    <span style={{ color: "#F7931A" }}>E</span>
+                    <span className="text-muted-foreground/80">V </span>
+                    <span
+                      style={{
+                        background: "linear-gradient(135deg, #14F195, #9945FF)",
+                        WebkitBackgroundClip: "text",
+                        WebkitTextFillColor: "transparent",
+                        backgroundClip: "text",
+                      }}
+                    >
+                      E
+                    </span>
+                    <span className="text-muted-foreground/80">NERGY</span>
+                  </span>
+                  <span className="text-[11px] text-nova-cyan/70 font-bold tracking-wider">
+                    ($ESB)
+                  </span>
+                </div>
+
+                {/* Claim Airdrop (blinking, below social) */}
                 <Button
                   type="button"
                   onClick={handleClaimClick}
                   data-ocid="hero.claim_airdrop.button"
                   size="lg"
-                  className="btn-blink bg-nova-cyan text-nova-dark font-black text-sm tracking-widest uppercase rounded-full px-8 py-6 hover:bg-nova-cyan/90 transition-all hover:scale-105"
+                  className="btn-blink bg-nova-cyan text-nova-dark font-black text-sm tracking-widest uppercase rounded-full px-8 py-6 hover:bg-nova-cyan/90 transition-all hover:scale-105 w-fit"
                 >
                   CLAIM AIRDROP
                   <ChevronRight className="ml-2 w-4 h-4" />
-                </Button>
-                <Button
-                  type="button"
-                  onClick={() => setShowWallet(true)}
-                  data-ocid="hero.connect_wallet.button"
-                  size="lg"
-                  variant="outline"
-                  className="border-nova-cyan/30 text-nova-cyan font-black text-sm tracking-widest uppercase rounded-full px-8 py-6 hover:bg-nova-cyan/10 hover:border-nova-cyan/60 transition-all hover:scale-105 gap-2"
-                >
-                  <Wallet className="w-4 h-4" />
-                  {walletAddress
-                    ? truncateAddress(walletAddress)
-                    : "CONNECT WALLET"}
                 </Button>
               </div>
             </motion.div>
@@ -537,13 +706,91 @@ export default function LandingPage() {
                 <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-nova-cyan/20 to-nova-purple/20 blur-3xl" />
                 <div className="glass-card rounded-3xl p-6 relative border-nova-cyan/20 purple-glow">
                   <img
-                    src="/assets/generated/token-hero.dim_500x500.png"
-                    alt="$NOVA Token"
+                    src="/assets/generated/token-hero-ev-energy.dim_500x500.png"
+                    alt="$ESB Token"
                     className="w-72 h-72 sm:w-96 sm:h-96 object-contain animate-float"
                   />
                 </div>
               </div>
             </motion.div>
+          </div>
+        </section>
+
+        {/* Tokenomics Section */}
+        <section
+          ref={tokenomicsRef}
+          id="tokenomics"
+          className="py-20 px-4 sm:px-6"
+        >
+          <div className="max-w-5xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center mb-14"
+            >
+              <p className="text-xs font-semibold text-nova-cyan tracking-widest uppercase mb-3">
+                Token Distribution
+              </p>
+              <h2 className="text-4xl md:text-5xl font-black uppercase">
+                <span className="gradient-text">Tokenomics</span>
+              </h2>
+            </motion.div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {tokenomicsCards.map((card, i) => (
+                <motion.div
+                  key={card.label}
+                  initial={{ opacity: 0, y: 40 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: i * 0.1 }}
+                  data-ocid={`tokenomics.item.${i + 1}`}
+                  className="glass-card rounded-2xl p-6 border border-nova-cyan/15 hover:border-nova-cyan/40 transition-all group text-center"
+                >
+                  <div
+                    className="w-12 h-12 rounded-full mx-auto mb-4 flex items-center justify-center"
+                    style={{
+                      background:
+                        i % 2 === 0
+                          ? "linear-gradient(135deg,rgba(20,184,166,0.2),rgba(20,184,166,0.05))"
+                          : "linear-gradient(135deg,rgba(168,85,247,0.2),rgba(168,85,247,0.05))",
+                      border:
+                        i % 2 === 0
+                          ? "1px solid rgba(20,184,166,0.3)"
+                          : "1px solid rgba(168,85,247,0.3)",
+                    }}
+                  >
+                    <BarChart3
+                      className="w-5 h-5"
+                      style={{
+                        color: i % 2 === 0 ? "#14b8a6" : "#a855f7",
+                      }}
+                    />
+                  </div>
+                  <p className="text-xs text-muted-foreground uppercase tracking-widest mb-2">
+                    {card.label}
+                  </p>
+                  <p
+                    className="text-xl font-black leading-tight"
+                    style={{
+                      background:
+                        i % 2 === 0
+                          ? "linear-gradient(135deg,#14b8a6,#22d3ee)"
+                          : "linear-gradient(135deg,#a855f7,#c084fc)",
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                      backgroundClip: "text",
+                    }}
+                  >
+                    {card.value}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {card.unit}
+                  </p>
+                </motion.div>
+              ))}
+            </div>
           </div>
         </section>
 
@@ -571,11 +818,11 @@ export default function LandingPage() {
                     </div>
                     <div className="flex items-baseline gap-2">
                       <span className="text-5xl font-black gradient-text">
-                        $NOVA
+                        $ESB
                       </span>
                       <span className="text-muted-foreground text-sm">=</span>
                       <span className="text-2xl font-bold text-foreground">
-                        $0.05
+                        $0.12
                       </span>
                     </div>
                     <div className="flex flex-wrap gap-2">
@@ -653,10 +900,10 @@ export default function LandingPage() {
 
                     <div className="grid grid-cols-2 gap-4">
                       {[
-                        { label: "Total Supply", val: "1B $NOVA" },
-                        { label: "Airdrop Pool", val: "10M $NOVA" },
-                        { label: "Presale Price", val: "$0.05" },
-                        { label: "Listing Price", val: "$0.12" },
+                        { label: "Total Supply", val: "50B $ESB" },
+                        { label: "Maximum Supply", val: "50B $ESB" },
+                        { label: "Airdrop", val: "27.5B $ESB" },
+                        { label: "Presale Price", val: "$0.12" },
                       ].map((stat) => (
                         <div
                           key={stat.label}
@@ -673,6 +920,93 @@ export default function LandingPage() {
                     </div>
                   </div>
                 </div>
+
+                {/* Token Investment Calculator */}
+                <div className="mt-8 border-t border-nova-cyan/10 pt-8">
+                  <p className="text-xs font-semibold text-nova-cyan tracking-widest uppercase mb-4 text-center">
+                    Token Investment Calculator
+                  </p>
+                  <div className="max-w-md mx-auto flex flex-col gap-4">
+                    <div className="flex flex-col gap-1">
+                      <label
+                        htmlFor="calc-usd-input"
+                        className="text-xs text-muted-foreground uppercase tracking-wide"
+                      >
+                        You Invest (USD) — Min $10 / Max $100,000
+                      </label>
+                      <div className="relative">
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-nova-cyan font-bold text-sm">
+                          $
+                        </span>
+                        <input
+                          type="number"
+                          min={10}
+                          max={100000}
+                          step="any"
+                          id="calc-usd-input"
+                          placeholder="Enter amount in USD"
+                          value={calcUsd}
+                          onChange={(e) => setCalcUsd(e.target.value)}
+                          className="w-full bg-white/5 border border-nova-cyan/20 rounded-xl pl-8 pr-4 py-3 text-foreground text-sm focus:outline-none focus:border-nova-cyan/60 transition-all"
+                        />
+                      </div>
+                      {calcError && (
+                        <p className="text-xs text-red-400 mt-1">{calcError}</p>
+                      )}
+                    </div>
+
+                    <div className="glass-card rounded-xl border border-nova-cyan/15 divide-y divide-nova-cyan/10">
+                      <div className="flex justify-between items-center px-5 py-3">
+                        <span className="text-xs text-muted-foreground uppercase tracking-wide">
+                          Token Price
+                        </span>
+                        <span className="text-sm font-bold text-nova-cyan">
+                          $0.12 per $ESB
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center px-5 py-3">
+                        <span className="text-xs text-muted-foreground uppercase tracking-wide">
+                          You Receive
+                        </span>
+                        <span className="text-lg font-black gradient-text">
+                          {calcUsdNum > 0 && calcValid
+                            ? `${calcTokens.toLocaleString("en-IN", { maximumFractionDigits: 0 })} $ESB`
+                            : "—"}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 bg-nova-cyan/5 border border-nova-cyan/15 rounded-xl px-5 py-3">
+                      <svg
+                        viewBox="0 0 24 24"
+                        className="w-4 h-4 shrink-0 fill-[#9945FF]"
+                        xmlns="http://www.w3.org/2000/svg"
+                        aria-label="Solana"
+                        role="img"
+                      >
+                        <path d="M20.83 8.01H3.17a.67.67 0 0 0-.47 1.14l4.5 4.5c.13.13.3.2.47.2h17.66a.67.67 0 0 0 .47-1.14l-4.5-4.5a.67.67 0 0 0-.47-.2zM3.17 15.99h17.66c.18 0 .35-.07.47-.2l4.5-4.5a.67.67 0 0 0-.47-1.14H3.17c-.18 0-.35.07-.47.2l-4.5 4.5a.67.67 0 0 0 .47 1.14zM3.17 6.01h17.66c.18 0 .35-.07.47-.2l4.5-4.5A.67.67 0 0 0 20.83 0H3.17c-.18 0-.35.07-.47.2L-1.8 4.7a.67.67 0 0 0 .47 1.14v.17z" />
+                      </svg>
+                      <span className="text-xs text-muted-foreground">
+                        Payment accepted via{" "}
+                        <span className="text-nova-cyan font-semibold">
+                          Solana (SOL)
+                        </span>
+                      </span>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={handleClaimClick}
+                      disabled={!calcValid}
+                      className="w-full py-3 rounded-xl font-bold text-sm uppercase tracking-widest transition-all
+                        bg-gradient-to-r from-nova-cyan to-nova-blue text-black
+                        disabled:opacity-30 disabled:cursor-not-allowed
+                        enabled:hover:opacity-90 enabled:hover:scale-[1.02]"
+                    >
+                      Invest via Solana
+                    </button>
+                  </div>
+                </div>
               </div>
             </motion.div>
           </div>
@@ -680,7 +1014,7 @@ export default function LandingPage() {
 
         {/* Features Section */}
         <section ref={featuresRef} id="features" className="py-20 px-4 sm:px-6">
-          <div className="max-w-5xl mx-auto">
+          <div className="max-w-6xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -688,25 +1022,46 @@ export default function LandingPage() {
               className="text-center mb-14"
             >
               <p className="text-xs font-semibold text-nova-cyan tracking-widest uppercase mb-3">
-                Why NovaChain
+                Why Choose Us
               </p>
               <h2 className="text-4xl md:text-5xl font-black uppercase">
-                <span className="gradient-text">FEATURES</span>
+                <span className="gradient-text">Why EV Energy?</span>
               </h2>
             </motion.div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {features.map((f, i) => (
                 <motion.div
                   key={f.title}
                   initial={{ opacity: 0, y: 40 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.6, delay: i * 0.15 }}
+                  transition={{ duration: 0.6, delay: i * 0.1 }}
                   data-ocid={`features.item.${i + 1}`}
                 >
-                  <div className="glass-card rounded-2xl p-8 h-full border-nova-cyan/10 hover:border-nova-cyan/30 transition-all hover:shadow-neon-cyan group">
-                    <div className="w-14 h-14 rounded-2xl bg-nova-cyan/10 border border-nova-cyan/20 flex items-center justify-center mb-6 text-nova-cyan group-hover:bg-nova-cyan/20 transition-all">
+                  <div
+                    className="glass-card rounded-2xl p-8 h-full border border-nova-cyan/10 hover:border-nova-cyan/30 transition-all hover:shadow-neon-cyan group"
+                    style={{
+                      background:
+                        i % 2 === 0
+                          ? "rgba(20,26,36,0.65)"
+                          : "rgba(20,18,40,0.65)",
+                    }}
+                  >
+                    <div
+                      className="w-14 h-14 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform"
+                      style={{
+                        background:
+                          i % 2 === 0
+                            ? "linear-gradient(135deg,rgba(20,184,166,0.2),rgba(20,184,166,0.05))"
+                            : "linear-gradient(135deg,rgba(168,85,247,0.2),rgba(168,85,247,0.05))",
+                        border:
+                          i % 2 === 0
+                            ? "1px solid rgba(20,184,166,0.3)"
+                            : "1px solid rgba(168,85,247,0.3)",
+                        color: i % 2 === 0 ? "#14b8a6" : "#a855f7",
+                      }}
+                    >
                       {f.icon}
                     </div>
                     <h3 className="text-lg font-bold text-foreground mb-3">
@@ -724,7 +1079,7 @@ export default function LandingPage() {
 
         {/* Roadmap Section */}
         <section ref={roadmapRef} id="roadmap" className="py-20 px-4 sm:px-6">
-          <div className="max-w-3xl mx-auto">
+          <div className="max-w-5xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -735,58 +1090,91 @@ export default function LandingPage() {
                 Our Journey
               </p>
               <h2 className="text-4xl md:text-5xl font-black uppercase">
-                <span className="gradient-text">ROADMAP</span>
+                <span className="gradient-text">Roadmap</span>
               </h2>
             </motion.div>
 
-            <div className="glass-card rounded-3xl p-8 md:p-12 border-nova-cyan/15">
-              <div className="relative">
-                <div className="absolute left-5 top-0 bottom-0 w-0.5 timeline-line rounded-full" />
-                <div className="flex flex-col gap-10">
-                  {roadmap.map((item, i) => (
-                    <motion.div
-                      key={item.quarter}
-                      initial={{ opacity: 0, x: -20 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.6, delay: i * 0.15 }}
-                      data-ocid={`roadmap.item.${i + 1}`}
-                      className="flex gap-6 pl-14 relative"
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              {roadmapPhases.map((phase, i) => (
+                <motion.div
+                  key={phase.phase}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: i * 0.12 }}
+                  data-ocid={`roadmap.item.${i + 1}`}
+                  className={`glass-card rounded-2xl p-6 border transition-all ${
+                    phase.active
+                      ? "border-nova-cyan/50 shadow-[0_0_24px_rgba(0,255,255,0.12)] bg-nova-cyan/5"
+                      : "border-white/8 hover:border-nova-cyan/20"
+                  }`}
+                >
+                  <div className="flex items-center gap-3 mb-4">
+                    <div
+                      className={`w-9 h-9 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
+                        phase.active
+                          ? "border-nova-cyan bg-nova-cyan/20 neon-glow"
+                          : "border-border bg-muted"
+                      }`}
                     >
-                      <div
-                        className={`absolute left-0 w-10 h-10 rounded-full border-2 flex items-center justify-center ${
-                          item.done
-                            ? "bg-nova-cyan/20 border-nova-cyan neon-glow"
-                            : "bg-muted border-border"
+                      {phase.active ? (
+                        <div className="w-3 h-3 rounded-full bg-nova-cyan animate-pulse" />
+                      ) : (
+                        <span className="text-xs font-black text-muted-foreground">
+                          {i + 1}
+                        </span>
+                      )}
+                    </div>
+                    <div>
+                      <p
+                        className={`text-[10px] font-bold tracking-widest uppercase ${
+                          phase.active
+                            ? "text-nova-cyan"
+                            : "text-muted-foreground"
                         }`}
                       >
-                        {item.done ? (
-                          <div className="w-3 h-3 rounded-full bg-nova-cyan" />
-                        ) : (
-                          <div className="w-2 h-2 rounded-full bg-muted-foreground" />
+                        {phase.phase}
+                        {phase.active && (
+                          <span className="ml-2 px-1.5 py-0.5 rounded-full bg-nova-cyan/20 text-nova-cyan text-[9px] border border-nova-cyan/30">
+                            ACTIVE
+                          </span>
                         )}
-                      </div>
-                      <div>
+                      </p>
+                      <h3
+                        className={`text-base font-black uppercase tracking-wide ${
+                          phase.active
+                            ? "text-foreground"
+                            : "text-foreground/70"
+                        }`}
+                      >
+                        {phase.title}
+                      </h3>
+                    </div>
+                  </div>
+
+                  <ul className="flex flex-col gap-2">
+                    {phase.items.map((item) => (
+                      <li
+                        key={item}
+                        className={`flex items-start gap-2 text-xs leading-relaxed ${
+                          phase.active
+                            ? "text-muted-foreground"
+                            : "text-muted-foreground/60"
+                        }`}
+                      >
                         <span
-                          className={`text-xs font-bold tracking-widest uppercase ${
-                            item.done
-                              ? "text-nova-cyan"
-                              : "text-muted-foreground"
+                          className={`mt-1 w-1.5 h-1.5 rounded-full flex-shrink-0 ${
+                            phase.active
+                              ? "bg-nova-cyan"
+                              : "bg-muted-foreground/30"
                           }`}
-                        >
-                          {item.quarter}
-                        </span>
-                        <h3 className="text-lg font-bold text-foreground mt-1 mb-2">
-                          {item.title}
-                        </h3>
-                        <p className="text-sm text-muted-foreground leading-relaxed">
-                          {item.desc}
-                        </p>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-              </div>
+                        />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </motion.div>
+              ))}
             </div>
           </div>
         </section>
@@ -795,6 +1183,19 @@ export default function LandingPage() {
       {/* Footer */}
       <footer className="border-t border-nova-cyan/10 py-12 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto flex flex-col gap-8">
+          {/* Logo + tagline */}
+          <div className="flex flex-col items-center gap-2">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-nova-cyan to-nova-purple flex items-center justify-center neon-glow">
+                <Zap className="w-4 h-4 text-white" />
+              </div>
+              <EvSolBitLogo className="text-xl" />
+            </div>
+            <p className="text-xs text-muted-foreground">
+              The Future of EV &amp; Crypto
+            </p>
+          </div>
+
           {/* Social Media Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -829,7 +1230,6 @@ export default function LandingPage() {
                 </motion.a>
               ))}
 
-              {/* Divider */}
               <div className="w-px h-8 bg-nova-cyan/20 mx-1" />
 
               {/* Subscribe Button */}
@@ -930,21 +1330,13 @@ export default function LandingPage() {
             </div>
           </motion.div>
 
-          {/* Divider */}
           <div className="w-full h-px bg-gradient-to-r from-transparent via-nova-cyan/20 to-transparent" />
 
           {/* Bottom row */}
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded-full bg-gradient-to-br from-nova-cyan to-nova-purple flex items-center justify-center">
-                <Zap className="w-3 h-3 text-white" />
-              </div>
-              <span className="font-black text-sm tracking-widest uppercase gradient-text">
-                NovaChain
-              </span>
-            </div>
             <p className="text-xs text-muted-foreground text-center">
-              © {new Date().getFullYear()}. Built with ❤️ using{" "}
+              © {new Date().getFullYear()} EV Energy. All rights reserved. Built
+              with ❤️ using{" "}
               <a
                 href={`https://caffeine.ai?utm_source=caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(window.location.hostname)}`}
                 target="_blank"
